@@ -1,16 +1,27 @@
-import Hero from "@/components/hero";
-import ConnectSupabaseSteps from "@/components/tutorial/connect-supabase-steps";
-import SignUpUserSteps from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/utils/supabase/check-env-vars";
+"use client";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default async function Home() {
-  return (
-    <>
-      <Hero />
-      <main className="flex-1 flex flex-col gap-6 px-4">
-        <h2 className="font-medium text-xl mb-4">Next steps</h2>
-        {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-      </main>
-    </>
-  );
+export default function Home() {
+  const supabase = createClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        router.replace("/admin"); // Redirect to admin if logged in
+      } else {
+        router.replace("/sign-in"); // Redirect to sign-in if not logged in
+      }
+    };
+
+    checkSession();
+  }, [router, supabase]);
+
+  return null;
 }
