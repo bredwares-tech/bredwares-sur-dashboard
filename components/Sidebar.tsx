@@ -20,7 +20,7 @@ export default function Sidebar({
 }) {
   const menuItems = [
     { icon: Video, label: "Dashboard", href: "/admin" },
-    { icon: Shield, label: "Videos", href: "/admin/videos" },
+    { icon: Shield, label: "Users", href: "/admin/users" },
     // { icon: Users, label: "Employees", href: "/employees" },
     // { icon: Calendar, label: "Schedule", href: "/schedule" },
     // { icon: Settings, label: "Settings", href: "/settings" },
