@@ -13,6 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User } from "@/hooks/useUsers";
+import { useRouter } from "next/navigation";
+
+// Utility function to store user data before navigation
+const navigateToUserProfile = (user: User) => {
+  // Store the user data in sessionStorage to avoid refetching
+  sessionStorage.setItem(`user_${user.clerk_id}`, JSON.stringify(user));
+
+  // Get router and navigate
+  const router = useRouter();
+  router.push(`/users/${user.clerk_id}`);
+};
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -32,16 +43,13 @@ export const columns: ColumnDef<User>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
+        // Stop propagation to prevent row click when checking the checkbox
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "id",
-  //   header: "ID",
-  // },
-
   {
     accessorKey: "first_name",
     header: "First Name",
@@ -76,36 +84,6 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "department",
     header: "Department",
   },
-  // {
-  //   accessorKey: "created_at",
-  //   header: "Created At",
-  //   cell: ({ row }) => {
-  //     const date = new Date(row.getValue("created_at"));
-  //     return date.toLocaleString();
-  //   },
-  // },
-  // {
-  //   accessorKey: "updated_at",
-  //   header: "Updated At",
-  //   cell: ({ row }) => {
-  //     const date = new Date(row.getValue("updated_at"));
-  //     return date.toLocaleString();
-  //   },
-  // },
-  // {
-  //   accessorKey: "avatar_url",
-  //   header: "Avatar",
-  //   cell: ({ row }) => {
-  //     const avatarUrl = row.getValue("avatar_url");
-  //     return avatarUrl ? (
-  //       <img
-  //         src={avatarUrl}
-  //         alt="User Avatar"
-  //         className="w-10 h-10 rounded-full"
-  //       />
-  //     ) : null;
-  //   },
-  // },
   {
     id: "actions",
     cell: ({ row }) => {
@@ -114,7 +92,12 @@ export const columns: ColumnDef<User>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              // Stop propagation to prevent row click when opening dropdown
+              onClick={(e) => e.stopPropagation()}
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -122,19 +105,37 @@ export const columns: ColumnDef<User>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(user.id);
+              }}
             >
               Copy User ID
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.clerk_id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(user.clerk_id);
+              }}
             >
               Copy Clerk ID
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View Profile</DropdownMenuItem>
-            {/* <DropdownMenuItem>Edit User</DropdownMenuItem> */}
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.stopPropagation();
+                // Store user data and navigate
+                sessionStorage.setItem(
+                  `user_${user.clerk_id}`,
+                  JSON.stringify(user)
+                );
+                const router = useRouter();
+                router.push(`/users/${user.clerk_id}`);
+              }}
+            >
+              View Profile
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

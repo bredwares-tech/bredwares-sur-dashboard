@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -37,10 +38,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-export function DataTable<TData extends { department: string }, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+
+export function DataTable<
+  TData extends { department: string; clerk_id: string },
+  TValue,
+>({ columns, data }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -48,10 +51,12 @@ export function DataTable<TData extends { department: string }, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
   // Get unique departments dynamically
   const departments = React.useMemo(() => {
     return Array.from(new Set(data.map((item) => item.department)));
   }, [data]);
+
   const table = useReactTable({
     data,
     columns,
@@ -70,11 +75,19 @@ export function DataTable<TData extends { department: string }, TValue>({
       rowSelection,
     },
   });
+
   const setDepartmentFilter = (department: string) => {
     table
       .getColumn("department")
       ?.setFilterValue(department === "All" ? "" : department);
   };
+
+  const handleRowClick = (clerk_id: string, rowData: TData) => {
+    // Store the user data in sessionStorage to avoid refetching
+    sessionStorage.setItem(`user_${clerk_id}`, JSON.stringify(rowData));
+    router.push(`/admin/users/${clerk_id}`);
+  };
+
   return (
     <div>
       <div className="flex items-center py-4">
@@ -88,32 +101,6 @@ export function DataTable<TData extends { department: string }, TValue>({
           }
           className="max-w-sm"
         />
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu> */}
 
         {/* Department Filter Dropdown */}
         <DropdownMenu>
@@ -169,6 +156,10 @@ export function DataTable<TData extends { department: string }, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={() =>
+                    handleRowClick(row.original.clerk_id, row.original)
+                  }
+                  className="cursor-pointer hover:bg-slate-100"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
