@@ -44,7 +44,7 @@ export default function Header({
           >
             <Menu className="h-6 w-6" />
           </button>
-          <h1 className="text-xl font-semibold">Bredware Dashboard</h1>
+          <h1 className="text-xl font-semibold">Bredware Surveillance</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="relative" ref={userMenuRef}>

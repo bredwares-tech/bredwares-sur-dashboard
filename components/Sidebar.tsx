@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   Calendar,
   Home,
+  LayoutDashboard,
   Settings,
   Shield,
   Users,
@@ -10,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-
+import logo from '../app/Logo-Bredware-technologies.png'
 export default function Sidebar({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
@@ -19,8 +20,8 @@ export default function Sidebar({
   setIsMobileMenuOpen: (value: boolean) => void;
 }) {
   const menuItems = [
-    { icon: Video, label: "Dashboard", href: "/admin" },
-    { icon: Shield, label: "Users", href: "/admin/users" },
+    { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+    { icon: Users, label: "Users", href: "/admin/users" },
     // { icon: Users, label: "Employees", href: "/employees" },
     // { icon: Calendar, label: "Schedule", href: "/schedule" },
     // { icon: Settings, label: "Settings", href: "/settings" },
@@ -46,21 +47,21 @@ export default function Sidebar({
         `}
       >
         <div className="flex justify-between items-center p-4">
-          {/* <div className="relative w-36 h-8 lg:w-44 lg:h-10">
+          <div className="relative w-36 h-8 lg:w-44 lg:h-10">
             <Link href="/admin">
               <Image
-                src="/assests/logowhite.png"
+                src={logo}
                 alt="Admin Logo"
                 fill
                 className="object-contain"
                 priority
               />
             </Link>
-          </div> */}
-          <div className="flex items-center space-x-4">
+          </div>
+          {/* <div className="flex items-center space-x-4">
             <Video className="h-8 w-8 text-blue-600" />
             <h1 className="text-xl font-bold">Bredware</h1>
-          </div>
+          </div> */}
           <button
             className="lg:hidden text-gray-400 hover:text-white"
             onClick={() => setIsMobileMenuOpen(false)}
