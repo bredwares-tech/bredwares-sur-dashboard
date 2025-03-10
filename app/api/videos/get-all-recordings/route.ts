@@ -1,19 +1,9 @@
-// app/api/videos/get-videos/route.ts
+// app/api/videos/get-all-recordings/route.ts
 import { createClient as createClientUser } from "@/utils/supabase/server";
 import { createClient as createClientAdmin } from "@supabase/supabase-js";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  const clerkId = request.nextUrl.searchParams.get("clerkId");
-  const date = request.nextUrl.searchParams.get("date");
-
-  if (!clerkId) {
-    return NextResponse.json(
-      { error: "Missing clerkId parameter" },
-      { status: 400 }
-    );
-  }
-
+export async function GET() {
   const supabase = await createClientUser();
 
   // Check for user session
@@ -36,30 +26,11 @@ export async function GET(request: NextRequest) {
   );
 
   try {
-    // Start building the query
-    let query = supabaseAdmin
+    // Fetch all recordings
+    const { data: recordings, error: recordingsError } = await supabaseAdmin
       .from("recordings")
       .select("*")
-      .eq("clerk_user_id", clerkId)
-      .order("created_at", { ascending: false }); // Ensures latest records are first
-
-    // If date parameter is provided, filter by date
-    if (date) {
-      // Convert the date parameter to the start and end of the day in ISO format
-      const startOfDay = new Date(date);
-      startOfDay.setUTCHours(0, 0, 0, 0);
-
-      const endOfDay = new Date(date);
-      endOfDay.setUTCHours(23, 59, 59, 999);
-
-      // Filter recordings by created_at between start and end of the selected day
-      query = query
-        .gte("created_at", startOfDay.toISOString())
-        .lte("created_at", endOfDay.toISOString());
-    }
-
-    // Execute the query
-    const { data: recordings, error: recordingsError } = await query;
+      .order("created_at", { ascending: false });
 
     if (recordingsError) {
       return NextResponse.json(
@@ -68,7 +39,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Remove duplicates (keep only the latest record for each unique title)
+    // Filter out duplicates (Keep only the latest record for each unique title)
     const uniqueRecordings = Object.values(
       recordings.reduce(
         (acc, recording) => {
