@@ -8,8 +8,11 @@ const geistSans = Geist({
 });
 
 export const metadata = {
-  title: "Bredware Surveillance System",
+  title: "Bredware Surveillance Dashboard",
   description: "Virtual meeting platform with private rooms",
+  icons: {
+    icon: "/bw.webp", // Path to favicon
+  },
 };
 
 export default function RootLayout({
