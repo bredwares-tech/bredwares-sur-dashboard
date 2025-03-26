@@ -45,7 +45,7 @@ export default function Header({
             <Menu className="h-6 w-6 text-black" />
           </button>
           <h1 className="text-xl font-semibold text-black">
-            Bredware Surveillance
+          Bredwares Work From Home Dashboard
           </h1>
         </div>
         <div className="flex items-center gap-4">
