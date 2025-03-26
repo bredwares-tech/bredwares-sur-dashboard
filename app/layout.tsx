@@ -8,7 +8,7 @@ const geistSans = Geist({
 });
 
 export const metadata = {
-  title: "Bredware Surveillance Dashboard",
+  title: "Bredwares Work From Home Dashboard",
   description: "Virtual meeting platform with private rooms",
   icons: {
     icon: "/bw.webp", // Path to favicon
